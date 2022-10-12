@@ -26,7 +26,7 @@ spec:
           config:
             repositories: |
               - type: git
-                url: https://github.com/tanmay-bhat/gitops.git
+                url: https://github.com/tanmay-bhat/gitops-demo.git
               - name: argo-helm
                 type: helm
                 url: https://argoproj.github.io/argo-helm

@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     path: clusters/gitops-cluster/applications
-    repoURL: 'https://github.com/tanmay-bhat/gitops'
+    repoURL: 'https://github.com/tanmay-bhat/gitops-demo'
     targetRevision: main
     directory:
       recurse: true
