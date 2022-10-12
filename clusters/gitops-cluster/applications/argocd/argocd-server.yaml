@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  destination:
+    namespace: argocd
+    name: in-cluster
+  syncPolicy:
+    automated:
+      selfHeal: true  
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    targetRevision: "5.5.22"
+    helm:
+      values: |
+        server:
+          ## ArgoCD config
+          ## reference https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
+          configEnabled: true
+          config:
+            repositories: |
+              - type: git
+                url: https://github.com/tanmay-bhat/gitops.git
+              - name: argo-helm
+                type: helm
+                url: https://argoproj.github.io/argo-helm
+            resource.compareoptions: |
+              ignoreAggregatedRoles: true
+          extraArgs:
+          - "--disable-auth"
+          metrics:
+            enabled: false
+          pdb:
+            enabled: true
+        controller:
+          pdb:
+            enabled: true
+          metrics:
+            enabled: false
+        repoServer:
+          pdb:
+            enabled: true
+          extraArgs:
+            - "--parallelismlimit=1"
+          metrics:
+            enabled: false
+        applicationSet:
+          # -- Enable Application Set controller
+          enabled: false
+        dex:
+          enabled: false
+        crds:
+          # -- Install and upgrade CRDs
+          install: true
+          # -- Keep CRDs on chart uninstall
+          keep: false

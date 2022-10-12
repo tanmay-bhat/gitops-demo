@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: nginx-prometheus-scale
+  namespace: default
+  labels:
+    deploymentName: nginx-server
+spec:
+  scaleTargetRef:
+    name: nginx-server
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.default.svc.cluster.local:80
+      metricName: nginx_http_requests_total
+      threshold: '10'
+      query: sum(rate(nginx_http_requests_total{job="nginx"}[1m]))
+  minReplicaCount:  1
+  maxReplicaCount:  10

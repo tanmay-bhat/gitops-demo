@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-server
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9113'
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports: 
+          - name: http 
+            containerPort: 80 
+            protocol: TCP
+          volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf        
+        - name: nginx-exporter
+          image: 'nginx/nginx-prometheus-exporter:0.10.0'
+          args:
+            - '-nginx.scrape-uri=http://localhost/nginx_status'
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          ports:
+            - containerPort: 9113
+              name: http-metrics
+      volumes:
+        - configMap:
+            name: nginx-config
+          name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    name: http
+  - port: 9113
+    name: http-metrics
+  selector:
+    app: nginx
+
+---
+apiVersion: v1 
+kind: ConfigMap 
+metadata: 
+  name: nginx-config
+  labels: 
+data: 
+  nginx.conf: | 
+    worker_processes  1; 
+    events { 
+        worker_connections  1024; 
+    } 
+    http {  
+        server { 
+            listen          80;
+            location /nginx_status { 
+                stub_status;
+            }
+          location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }            
+        } 
+    }
