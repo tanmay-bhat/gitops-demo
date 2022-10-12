@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tanmay-bhat/-demo.git'
+    repoURL: 'https://github.com/tanmay-bhat/gitops-demo.git'
     path: clusters/gitops-cluster/kubernetes-manifests/nginx-server
     targetRevision: HEAD
   destination:
