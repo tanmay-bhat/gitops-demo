@@ -133,7 +133,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 - Same goes with other configs also, just edit the values section with the new changes.
 
 <aside>
-💡 For the demo purpose, argocd is configured with no auth. This should be done in Production.
+💡 For the demo purpose, argocd is configured with no auth. This should not be done in Production.
 
 </aside>
 
